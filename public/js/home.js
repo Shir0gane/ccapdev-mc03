@@ -17,6 +17,21 @@ $(document).ready(function () {
     */
     $('#number').keyup(function () {
         // your code here
+        var number = $("#number").val();
+
+        $.get('/getCheckNumber', {number: number}, function(result){
+            if(result.number == number){
+                $("#number").css('background-color', 'red');
+                $("#error").text('Number already registered');
+                $("#submit").prop('disabled', true);
+            }
+
+            else{
+                $("#number").css('background-color', '#E3E3E3');
+                $("#error").text('');
+                $("#submit").prop('disabled', false);
+            }
+        });
     });
 
     /*
@@ -32,6 +47,24 @@ $(document).ready(function () {
     */
     $('#submit').click(function () {
         // your code here
+        var number = $("#number").val();
+        var name = $("#name").val();
+        if(number == '' || name == ''){
+            $("#error").text("Must not leave any empty strings");
+        }
+        else{
+            
+            $.get('/add', {name: name, number: number}, function(result){
+                if(result){
+                    $("#number").val("");
+                    $("#name").val("");
+                    $("#contacts").append('<div class="contact"><img src="/images/icon.webp" class="icon"><div class="info"><p class="text">' + name + '</p><p class="text">' + number + '</p></div><button class="remove"> X </button></div>');
+                }
+                else{
+                    $("#error").text("Error at this time");
+                }
+            });
+        }
     });
 
     /*
@@ -43,6 +76,16 @@ $(document).ready(function () {
     */
     $('#contacts').on('click', '.remove', function () {
         // your code here
+        var remove = this;
+        var number = $(remove).closest(".contact").children(".info").children("p:nth-child(2)").text();
+        $.get('/delete', {number: number}, function(result){
+            if(result){
+                $(remove).closest('.contact').remove();
+            }
+            else{
+                $("#error").text("Error at this time");
+            }
+        });
     });
 
 })

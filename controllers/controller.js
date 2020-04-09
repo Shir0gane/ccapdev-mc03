@@ -14,7 +14,16 @@ const controller = {
     */
     getIndex: function(req, res) {
         // your code here
-        res.render('home'); // This is to load the page initially
+        db.findMany(User, null, null, function(result){
+            if(result){
+                phoneBookList = result;
+                res.render('home', {phoneBookList});
+            }
+            else{
+                res.render('home'); // This is to load the page initially
+            }
+        });
+        
     },
 
     /*
@@ -26,6 +35,12 @@ const controller = {
     */
     getCheckNumber: function(req, res) {
         // your code here
+
+        var number = req.query.number;
+
+        db.findOne(User, {number: number}, 'number', function(result){
+            res.send(result);
+        });
     },
 
     /*
@@ -36,6 +51,13 @@ const controller = {
     */
     getAdd: function(req, res) {
         // your code here
+        var name = req.query.name;
+        var number = req.query.number;
+        db.insertOne(User, {name: name, number: number}, function(flag){
+            if(flag){
+                res.send(flag);
+            }
+        });
     },
 
     /*
@@ -46,6 +68,12 @@ const controller = {
     */
     getDelete: function (req, res) {
         // your code here
+        var number = req.query.number;
+        db.deleteOne(User, {number: number}, function(flag){
+            if(flag){
+                res.send(true);
+            }
+        });
     }
 
 }
